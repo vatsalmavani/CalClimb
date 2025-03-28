@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -21,12 +21,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { ruleBook } from "@/lib/utils";
+import {
+  generateEasy,
+  generateHard,
+  generateMedium,
+  ruleBook,
+} from "@/lib/utils";
 
 export default function PracticePage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(
     null
   );
+  const [easyExamples, setEasyExamples] = useState<string[]>([]);
+  const [mediumExamples, setMediumExamples] = useState<string[]>([]);
+  const [hardExamples, setHardExamples] = useState<string[]>([]);
+
+  useEffect(() => {
+    setEasyExamples(Array.from({ length: 3 }, () => generateEasy()?.[2] ?? ""));
+    setMediumExamples(
+      Array.from({ length: 3 }, () => generateMedium()?.[2] ?? "")
+    );
+    setHardExamples(Array.from({ length: 3 }, () => generateHard()?.[2] ?? ""));
+  }, []);
 
   const difficultyLevels = [
     {
@@ -34,7 +50,7 @@ export default function PracticePage() {
       title: "Easy",
       description:
         "Basic operations with smaller numbers. Perfect for beginners or warming up.",
-      examples: ["23 + 45", "78 - 32", "6 × 8"],
+      examples: easyExamples,
       timeLimit: 45,
       icon: <Brain className="h-8 w-8" />,
       color: "bg-green-100 dark:bg-green-900/20",
@@ -46,7 +62,7 @@ export default function PracticePage() {
       title: "Medium",
       description:
         "More complex calculations with larger numbers. Good for regular practice.",
-      examples: ["127 + 385", "243 - 167", "24 × 16"],
+      examples: mediumExamples,
       timeLimit: 60,
       icon: <Clock className="h-8 w-8" />,
       color: "bg-amber-100 dark:bg-amber-900/20",
@@ -58,7 +74,7 @@ export default function PracticePage() {
       title: "Hard",
       description:
         "Advanced calculations requiring multiple steps. For those seeking a challenge.",
-      examples: ["847 × 36", "1250 ÷ 16", "15% of 840"],
+      examples: hardExamples,
       timeLimit: 90,
       icon: <Trophy className="h-8 w-8" />,
       color: "bg-red-100 dark:bg-red-900/20",
