@@ -12,40 +12,39 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 export default function Home() {
   const router = useRouter();
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
-          <div className="flex items-center font-bold text-xl">CalClimb</div>
-          <nav className="hidden md:flex gap-6">
-            <Link
-              href="#features"
-              className="text-sm font-medium hover:text-primary"
-            >
-              Features
-            </Link>
-            <Link
-              href="#testimonials"
-              className="text-sm font-medium hover:text-primary"
-            >
-              Testimonials
-            </Link>
-            <Link href="#" className="text-sm font-medium hover:text-primary">
-              Contact
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="#" className="text-sm font-medium hover:text-primary">
-              Log in
-            </Link>
-            <Button>Get Started</Button>
-          </div>
+      <Header>
+        <nav className="hidden md:flex gap-6">
+          <Link
+            href="#features"
+            className="text-sm font-medium hover:text-primary"
+          >
+            Features
+          </Link>
+          <Link
+            href="#testimonials"
+            className="text-sm font-medium hover:text-primary"
+          >
+            Testimonials
+          </Link>
+          <Link href="#" className="text-sm font-medium hover:text-primary">
+            Contact
+          </Link>
+        </nav>
+        <div className="flex items-center gap-4">
+          <Link href="#" className="text-sm font-medium hover:text-primary">
+            Log in
+          </Link>
+          <Button>Get Started</Button>
         </div>
-      </header>
+      </Header>
       <main className="flex-1">
         {/* Hero Section */}
         <section className="flex flex-col justify-center items-center gap-4 w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-background to-muted">
@@ -64,8 +63,12 @@ export default function Home() {
             >
               Quick Start
             </Button>
-            <Button size="lg" variant="outline">
-              Log in
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push("/custom-practice")}
+            >
+              Custom Session
             </Button>
           </div>
         </section>
@@ -200,11 +203,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="w-full flex justify-center items-center py-4 bg-foreground">
-        <div className="text-sm text-background">
-          &copy; {new Date().getFullYear()} CalClimb. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

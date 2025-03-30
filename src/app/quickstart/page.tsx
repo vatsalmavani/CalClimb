@@ -2,14 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Brain,
-  CheckCircle2,
-  Clock,
-  Trophy,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +18,11 @@ import {
   generateEasy,
   generateHard,
   generateMedium,
+  getDifficultyLevels,
   ruleBook,
 } from "@/lib/utils";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 export default function PracticePage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(
@@ -44,45 +40,6 @@ export default function PracticePage() {
     setHardExamples(Array.from({ length: 3 }, () => generateHard()?.[2] ?? ""));
   }, []);
 
-  const difficultyLevels = [
-    {
-      id: "easy",
-      title: "Easy",
-      description:
-        "Basic operations with smaller numbers. Perfect for beginners or warming up.",
-      examples: easyExamples,
-      timeLimit: 45,
-      icon: <Brain className="h-8 w-8" />,
-      color: "bg-green-100 dark:bg-green-900/20",
-      borderColor: "border-green-200 dark:border-green-800",
-      textColor: "text-green-600 dark:text-green-400",
-    },
-    {
-      id: "medium",
-      title: "Medium",
-      description:
-        "More complex calculations with larger numbers. Good for regular practice.",
-      examples: mediumExamples,
-      timeLimit: 60,
-      icon: <Clock className="h-8 w-8" />,
-      color: "bg-amber-100 dark:bg-amber-900/20",
-      borderColor: "border-amber-200 dark:border-amber-800",
-      textColor: "text-amber-600 dark:text-amber-400",
-    },
-    {
-      id: "hard",
-      title: "Hard",
-      description:
-        "Advanced calculations requiring multiple steps. For those seeking a challenge.",
-      examples: hardExamples,
-      timeLimit: 90,
-      icon: <Trophy className="h-8 w-8" />,
-      color: "bg-red-100 dark:bg-red-900/20",
-      borderColor: "border-red-200 dark:border-red-800",
-      textColor: "text-red-600 dark:text-red-400",
-    },
-  ];
-
   const tips = [
     "Start with an easier level if you're new to speed arithmetic",
     "Practice regularly - even 10 minutes daily makes a big difference",
@@ -97,33 +54,43 @@ export default function PracticePage() {
     // You could use router.push(`/challenges/${selectedDifficulty}`) here
   };
 
+  let difficultyLevels = getDifficultyLevels();
+  difficultyLevels = difficultyLevels.map((level) => {
+    return {
+      ...level,
+      examples:
+        level.id === "easy"
+          ? easyExamples
+          : level.id === "medium"
+          ? mediumExamples
+          : hardExamples,
+    };
+  });
+
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
-          <div className="flex items-center font-bold text-xl">CalClimb</div>
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="text-sm font-medium hover:text-primary">
-              Home
-            </Link>
-            <Link
-              href="/score-calculation"
-              className="text-sm font-medium hover:text-primary"
-            >
-              Scoring
-            </Link>
-            <Link href="#" className="text-sm font-medium hover:text-primary">
-              Contact
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="#" className="text-sm font-medium hover:text-primary">
-              Log in
-            </Link>
-            <Button>Get Started</Button>
-          </div>
+      <Header>
+        <nav className="hidden md:flex gap-6">
+          <Link href="/" className="text-sm font-medium hover:text-primary">
+            Home
+          </Link>
+          <Link
+            href="/score-calculation"
+            className="text-sm font-medium hover:text-primary"
+          >
+            Scoring
+          </Link>
+          <Link href="#" className="text-sm font-medium hover:text-primary">
+            Contact
+          </Link>
+        </nav>
+        <div className="flex items-center gap-4">
+          <Link href="#" className="text-sm font-medium hover:text-primary">
+            Log in
+          </Link>
+          <Button>Get Started</Button>
         </div>
-      </header>
+      </Header>
       <main className="flex-1 px-4 md:px-6 lg:px-8">
         <div className="flex flex-col inset-0 mx-auto max-w-5xl py-12 md:py-16 lg:py-20">
           <div className="mb-8">
@@ -156,7 +123,7 @@ export default function PracticePage() {
               >
                 <CardHeader className={`${level.color} rounded-t-lg p-4`}>
                   <CardTitle className="flex justify-between items-center">
-                    <div className={level.textColor}>{level.icon}</div>
+                    {<level.icon className={`${level.textColor} h-8 w-8`} />}
                     {selectedDifficulty === level.id && (
                       <CheckCircle2 className="h-6 w-6 text-primary" />
                     )}
@@ -248,11 +215,7 @@ export default function PracticePage() {
           </div>
         </div>
       </main>
-      <footer className="w-full flex justify-center items-center py-4 bg-foreground">
-        <div className="text-sm text-background">
-          &copy; {new Date().getFullYear()} CalClimb. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

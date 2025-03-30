@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { BrainIcon, ClockIcon, Trophy, TrophyIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -363,4 +364,46 @@ export const generateHard = (): [number, number, string] | null => {
   const randomOperation =
     operations[Math.floor(Math.random() * operations.length)];
   return randomOperation();
+};
+
+export const getDifficultyLevels = () => {
+  const difficultyLevels = [
+    {
+      id: "easy",
+      title: "Easy",
+      description:
+        "Basic operations with smaller numbers. Perfect for beginners or warming up.",
+      examples: [""],
+      timeLimit: 45,
+      icon: BrainIcon,
+      color: "bg-green-100 dark:bg-green-900/20",
+      borderColor: "border-green-200 dark:border-green-800",
+      textColor: "text-green-600 dark:text-green-400",
+    },
+    {
+      id: "medium",
+      title: "Medium",
+      description:
+        "More complex calculations with larger numbers. Good for regular practice.",
+      examples: [""],
+      timeLimit: 60,
+      icon: ClockIcon,
+      color: "bg-amber-100 dark:bg-amber-900/20",
+      borderColor: "border-amber-200 dark:border-amber-800",
+      textColor: "text-amber-600 dark:text-amber-400",
+    },
+    {
+      id: "hard",
+      title: "Hard",
+      description:
+        "Advanced calculations requiring multiple steps. For those seeking a challenge.",
+      examples: [""],
+      timeLimit: 90,
+      icon: TrophyIcon,
+      color: "bg-red-100 dark:bg-red-900/20",
+      borderColor: "border-red-200 dark:border-red-800",
+      textColor: "text-red-600 dark:text-red-400",
+    },
+  ];
+  return difficultyLevels;
 };
