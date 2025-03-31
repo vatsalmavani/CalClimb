@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -26,42 +26,115 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { getDifficultyLevels } from "@/lib/utils";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Link from "next/link";
+import RangeSlider from "@/components/rangeSlider";
+import { difficultyLevels } from "@/lib/constants";
+import {
+  difficultyLevelType,
+  ruleDefinitionsType,
+} from "@/types/difficultyLevel.types";
 
 export default function CustomPractice() {
-  const [difficulty, setDifficulty] = useState("medium");
-  const [timeLimit, setTimeLimit] = useState(60);
+  const [difficulty, setDifficulty] = useState<string | null>(null);
+  const [timeLimit, setTimeLimit] = useState(0);
   const [showMoreCustomizations, setShowMoreCustomizations] = useState(false);
 
   // Addition/Subtraction ranges
-  const [addSubRange, setAddSubRange] = useState([0, 999]);
+  const [addSubRange, setAddSubRange] = useState<[number, number]>([0, 1000]);
   const [addSubDecimalPrecision, setAddSubDecimalPrecision] = useState(2);
 
   // Multiplication/Division ranges
-  const [multDivRange, setMultDivRange] = useState([0, 100]);
+  const [multDivRange, setMultDivRange] = useState<[number, number]>([0, 100]);
   const [multDivDecimalPrecision, setMultDivDecimalPrecision] = useState(1);
 
   // Percentage ranges
-  const [percentValueRange, setPercentValueRange] = useState([100, 900]);
-  const [percentRange, setPercentRange] = useState([0, 50]);
+  const [percentValueRange, setPercentValueRange] = useState<[number, number]>([
+    100, 900,
+  ]);
+  const [percentRange, setPercentRange] = useState<[number, number]>([0, 50]);
 
-  const defaultDifficultyLevels = getDifficultyLevels();
+  // set appropriate state values on selecting a difficulty level
+  useEffect(() => {
+    if (difficulty) {
+      const difficultyProperties = difficultyLevels.find(
+        (diff) => diff.id === difficulty
+      );
+      const defaultRules: ruleDefinitionsType = {
+        addSubRange: { range: [0, 100], decimalPrecision: 0 },
+        multDivRange: { range: [0, 100], decimalPrecision: 0 },
+        percentRange: {
+          percent: [0, 100],
+          value: [0, 100],
+        },
+      };
+      const rules = difficultyProperties?.ruleDefinitions ?? defaultRules;
+      setAddSubRange(rules.addSubRange.range);
+      setAddSubDecimalPrecision(rules.addSubRange.decimalPrecision);
+      setMultDivRange(rules.multDivRange.range);
+      setMultDivDecimalPrecision(rules.multDivRange.decimalPrecision);
+      setPercentRange(
+        rules.percentRange?.percent ?? defaultRules.percentRange.percent
+      );
+      setPercentValueRange(
+        rules.percentRange?.value ?? defaultRules.percentRange.value
+      );
+    }
+  }, [difficulty]);
+
+  // de-select difficulty if user changes any slider values
+  useEffect(() => {
+    const checkRuleMatch = (level: difficultyLevelType) => {
+      return (
+        addSubRange[0] === level.ruleDefinitions.addSubRange.range[0] &&
+        addSubRange[1] === level.ruleDefinitions.addSubRange.range[1] &&
+        addSubDecimalPrecision ===
+          level.ruleDefinitions.addSubRange.decimalPrecision &&
+        multDivRange[0] === level.ruleDefinitions.multDivRange.range[0] &&
+        multDivRange[1] === level.ruleDefinitions.multDivRange.range[1] &&
+        multDivDecimalPrecision ===
+          level.ruleDefinitions.multDivRange.decimalPrecision &&
+        percentRange[0] === level.ruleDefinitions.percentRange.percent[0] &&
+        percentRange[1] === level.ruleDefinitions.percentRange.percent[1] &&
+        percentValueRange[0] === level.ruleDefinitions.percentRange.value[0] &&
+        percentValueRange[1] === level.ruleDefinitions.percentRange.value[1] &&
+        timeLimit === level.timeLimit
+      );
+    };
+
+    if (checkRuleMatch(difficultyLevels[0])) {
+      setDifficulty("easy");
+    } else if (checkRuleMatch(difficultyLevels[1])) {
+      setDifficulty("medium");
+    } else if (checkRuleMatch(difficultyLevels[2])) {
+      setDifficulty("hard");
+    } else {
+      setDifficulty(null);
+    }
+  }, [
+    addSubRange,
+    addSubDecimalPrecision,
+    multDivRange,
+    multDivDecimalPrecision,
+    percentRange,
+    percentValueRange,
+    timeLimit,
+  ]);
 
   const handleStartPractice = () => {
-    // Here you would handle starting the practice with the selected configuration
-    console.log({
-      difficulty,
-      timeLimit,
-      addSubRange,
-      addSubDecimalPrecision,
-      multDivRange,
-      multDivDecimalPrecision,
-      percentValueRange,
-      percentRange,
-    });
+    const ruleDefinitions: ruleDefinitionsType = {
+      addSubRange: {
+        range: addSubRange,
+        decimalPrecision: addSubDecimalPrecision,
+      },
+      multDivRange: {
+        range: multDivRange,
+        decimalPrecision: multDivDecimalPrecision,
+      },
+      percentRange: { percent: percentRange, value: percentValueRange },
+    };
+    console.log(ruleDefinitions);
   };
 
   const calcTimeStampPos = (value: number) => {
@@ -88,12 +161,6 @@ export default function CustomPractice() {
             Contact
           </Link>
         </nav>
-        <div className="flex items-center gap-4">
-          <Link href="#" className="text-sm font-medium hover:text-primary">
-            Log in
-          </Link>
-          <Button>Get Started</Button>
-        </div>
       </Header>
       <main className="flex-1 px-4 md:px-6 lg:px-8">
         <div className="flex flex-col inset-0 mx-auto max-w-4xl py-12 md:py-16 lg:py-20">
@@ -121,7 +188,7 @@ export default function CustomPractice() {
               Select Difficulty Level
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
-              {defaultDifficultyLevels.map((level) => (
+              {difficultyLevels.map((level) => (
                 <Card
                   key={level.id}
                   className={`m-0 p-0 cursor-pointer transition-all hover:shadow-md ${
@@ -218,67 +285,14 @@ export default function CustomPractice() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label>Number Range</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {addSubRange[0]} to {addSubRange[1]}
-                      </span>
-                    </div>
-                    <Slider
-                      value={addSubRange}
-                      min={0}
-                      max={9999}
-                      step={1}
-                      onValueChange={(val) => setAddSubRange(val)}
-                      className="py-4"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="add-sub-min">Minimum Value</Label>
-                      <Input
-                        id="add-sub-min"
-                        type="number"
-                        value={addSubRange[0]}
-                        onChange={(e) =>
-                          setAddSubRange([
-                            Number.parseInt(e.target.value || "0"),
-                            addSubRange[1],
-                          ])
-                        }
-                        min={0}
-                        max={Math.max(addSubRange[1] - 1, 0)}
-                        aria-invalid={
-                          addSubRange[0] < 0 ||
-                          addSubRange[0] >= addSubRange[1] ||
-                          addSubRange[0] >= 9999
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="add-sub-max">Maximum Value</Label>
-                      <Input
-                        id="add-sub-max"
-                        type="number"
-                        value={addSubRange[1]}
-                        onChange={(e) =>
-                          setAddSubRange([
-                            addSubRange[0],
-                            Number.parseInt(e.target.value || "0"),
-                          ])
-                        }
-                        min={Math.min(addSubRange[0] + 1, 9999)}
-                        max={9999}
-                        aria-invalid={
-                          addSubRange[1] <= addSubRange[0] ||
-                          addSubRange[1] <= 0 ||
-                          addSubRange[1] > 9999
-                        }
-                      />
-                    </div>
-                  </div>
+                  <RangeSlider
+                    min={0}
+                    max={10000}
+                    step={50}
+                    label="Number"
+                    rangeState={addSubRange}
+                    setRangeState={setAddSubRange}
+                  />
 
                   <div className="space-y-2">
                     <Label htmlFor="add-sub-precision">Decimal Precision</Label>
@@ -331,67 +345,14 @@ export default function CustomPractice() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label>Number Range</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {multDivRange[0]} to {multDivRange[1]}
-                      </span>
-                    </div>
-                    <Slider
-                      value={multDivRange}
-                      min={0}
-                      max={999}
-                      step={1}
-                      onValueChange={setMultDivRange}
-                      className="py-4"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="mult-div-min">Minimum Value</Label>
-                      <Input
-                        id="mult-div-min"
-                        type="number"
-                        value={multDivRange[0]}
-                        onChange={(e) =>
-                          setMultDivRange([
-                            Number.parseInt(e.target.value || "0"),
-                            multDivRange[1],
-                          ])
-                        }
-                        min={0}
-                        max={Math.max(multDivRange[1] - 1, 0)}
-                        aria-invalid={
-                          multDivRange[0] < 0 ||
-                          multDivRange[0] >= multDivRange[1] ||
-                          multDivRange[0] >= 999
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="mult-div-max">Maximum Value</Label>
-                      <Input
-                        id="mult-div-max"
-                        type="number"
-                        value={multDivRange[1]}
-                        onChange={(e) =>
-                          setMultDivRange([
-                            multDivRange[0],
-                            Number.parseInt(e.target.value || "0"),
-                          ])
-                        }
-                        min={Math.min(multDivRange[0] + 1, 999)}
-                        max={999}
-                        aria-invalid={
-                          multDivRange[1] <= multDivRange[0] ||
-                          multDivRange[1] <= 0 ||
-                          multDivRange[1] > 999
-                        }
-                      />
-                    </div>
-                  </div>
+                  <RangeSlider
+                    min={0}
+                    max={1000}
+                    step={50}
+                    label="Number"
+                    rangeState={multDivRange}
+                    setRangeState={setMultDivRange}
+                  />
 
                   <div className="space-y-2">
                     <Label htmlFor="mult-div-precision">
@@ -442,129 +403,24 @@ export default function CustomPractice() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label>Value Range</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {percentValueRange[0]} to {percentValueRange[1]}
-                      </span>
-                    </div>
-                    <Slider
-                      value={percentValueRange}
-                      min={0}
-                      max={9999}
-                      step={1}
-                      onValueChange={setPercentValueRange}
-                      className="py-4"
-                    />
-                  </div>
+                  <RangeSlider
+                    min={0}
+                    max={1000}
+                    step={50}
+                    label="Value"
+                    rangeState={percentValueRange}
+                    setRangeState={setPercentValueRange}
+                  />
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="percent-value-min">Minimum Value</Label>
-                      <Input
-                        id="percent-value-min"
-                        type="number"
-                        value={percentValueRange[0]}
-                        onChange={(e) =>
-                          setPercentValueRange([
-                            Number.parseInt(e.target.value || "0"),
-                            percentValueRange[1],
-                          ])
-                        }
-                        min={0}
-                        max={Math.max(percentValueRange[1] - 1, 0)}
-                        aria-invalid={
-                          percentValueRange[0] < 0 ||
-                          percentValueRange[0] >= percentValueRange[1] ||
-                          percentValueRange[0] >= 9999
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="percent-value-max">Maximum Value</Label>
-                      <Input
-                        id="percent-value-max"
-                        type="number"
-                        value={percentValueRange[1]}
-                        onChange={(e) =>
-                          setPercentValueRange([
-                            percentValueRange[0],
-                            Number.parseInt(e.target.value || "0"),
-                          ])
-                        }
-                        min={Math.min(percentValueRange[0] + 1, 9999)}
-                        max={9999}
-                        aria-invalid={
-                          percentValueRange[1] <= percentValueRange[0] ||
-                          percentValueRange[1] <= 0 ||
-                          percentValueRange[1] > 9999
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label>Percentage Range</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {percentRange[0]}% to {percentRange[1]}%
-                      </span>
-                    </div>
-                    <Slider
-                      value={percentRange}
-                      min={0}
-                      max={1000}
-                      step={1}
-                      onValueChange={setPercentRange}
-                      className="py-4"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="percent-min">Minimum Percentage</Label>
-                      <Input
-                        id="percent-min"
-                        type="number"
-                        value={percentRange[0]}
-                        onChange={(e) =>
-                          setPercentRange([
-                            Number.parseInt(e.target.value || "0"),
-                            percentRange[1],
-                          ])
-                        }
-                        min={0}
-                        max={Math.max(percentRange[1] - 1, 0)}
-                        aria-invalid={
-                          percentRange[0] < 0 ||
-                          percentRange[0] >= percentRange[1] ||
-                          percentRange[0] >= 1000
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="percent-max">Maximum Percentage</Label>
-                      <Input
-                        id="percent-max"
-                        type="number"
-                        value={percentRange[1]}
-                        onChange={(e) =>
-                          setPercentRange([
-                            percentRange[0],
-                            Number.parseInt(e.target.value || "0"),
-                          ])
-                        }
-                        min={Math.min(percentRange[0] + 1, 1000)}
-                        max={1000}
-                        aria-invalid={
-                          percentRange[1] <= percentRange[0] ||
-                          percentRange[1] <= 0 ||
-                          percentRange[1] > 1000
-                        }
-                      />
-                    </div>
-                  </div>
+                  <RangeSlider
+                    min={0}
+                    max={1000}
+                    step={50}
+                    label="Percent"
+                    suffix="%"
+                    rangeState={percentRange}
+                    setRangeState={setPercentRange}
+                  />
 
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm">Example problem:</p>

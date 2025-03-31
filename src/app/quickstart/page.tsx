@@ -14,15 +14,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import {
-  generateEasy,
-  generateHard,
-  generateMedium,
-  getDifficultyLevels,
-  ruleBook,
-} from "@/lib/utils";
+import { generateEasy, generateHard, generateMedium } from "@/lib/utils";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { difficultyLevels } from "@/lib/constants";
 
 export default function PracticePage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(
@@ -33,11 +28,9 @@ export default function PracticePage() {
   const [hardExamples, setHardExamples] = useState<string[]>([]);
 
   useEffect(() => {
-    setEasyExamples(Array.from({ length: 3 }, () => generateEasy()?.[2] ?? ""));
-    setMediumExamples(
-      Array.from({ length: 3 }, () => generateMedium()?.[2] ?? "")
-    );
-    setHardExamples(Array.from({ length: 3 }, () => generateHard()?.[2] ?? ""));
+    setEasyExamples(Array.from({ length: 3 }, generateEasy));
+    setMediumExamples(Array.from({ length: 3 }, generateMedium));
+    setHardExamples(Array.from({ length: 3 }, generateHard));
   }, []);
 
   const tips = [
@@ -54,8 +47,8 @@ export default function PracticePage() {
     // You could use router.push(`/challenges/${selectedDifficulty}`) here
   };
 
-  let difficultyLevels = getDifficultyLevels();
-  difficultyLevels = difficultyLevels.map((level) => {
+  let levels = difficultyLevels;
+  levels = levels.map((level) => {
     return {
       ...level,
       examples:
@@ -84,15 +77,10 @@ export default function PracticePage() {
             Contact
           </Link>
         </nav>
-        <div className="flex items-center gap-4">
-          <Link href="#" className="text-sm font-medium hover:text-primary">
-            Log in
-          </Link>
-          <Button>Get Started</Button>
-        </div>
       </Header>
       <main className="flex-1 px-4 md:px-6 lg:px-8">
         <div className="flex flex-col inset-0 mx-auto max-w-5xl py-12 md:py-16 lg:py-20">
+          {/* Header Section */}
           <div className="mb-8">
             <Link
               href="/"
@@ -110,8 +98,9 @@ export default function PracticePage() {
             </p>
           </div>
 
+          {/* Difficulty Selection */}
           <div className="grid gap-6 md:grid-cols-3">
-            {difficultyLevels.map((level) => (
+            {levels.map((level) => (
               <Card
                 key={level.id}
                 className={`m-0 p-0 cursor-pointer transition-all hover:shadow-md ${
@@ -138,7 +127,7 @@ export default function PracticePage() {
                     <div>
                       <h3 className="font-medium mb-2">Rules:</h3>
                       <ul className="space-y-1">
-                        {ruleBook
+                        {levels
                           .find((l) => l.id === level.id)
                           ?.rules.map((rule, index) => (
                             <li

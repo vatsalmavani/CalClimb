@@ -38,12 +38,6 @@ export default function Home() {
             Contact
           </Link>
         </nav>
-        <div className="flex items-center gap-4">
-          <Link href="#" className="text-sm font-medium hover:text-primary">
-            Log in
-          </Link>
-          <Button>Get Started</Button>
-        </div>
       </Header>
       <main className="flex-1">
         {/* Hero Section */}
