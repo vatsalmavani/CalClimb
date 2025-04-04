@@ -1,4 +1,7 @@
-import { difficultyLevelType } from "@/types/difficultyLevel.types";
+import {
+  difficultyLevelType,
+  ruleDefinitionsType,
+} from "@/types/difficultyLevel.types";
 import { BrainIcon, ClockIcon, TrophyIcon } from "lucide-react";
 
 export const difficultyLevels: difficultyLevelType[] = [
@@ -8,7 +11,6 @@ export const difficultyLevels: difficultyLevelType[] = [
     description:
       "Basic operations with smaller numbers. Perfect for beginners or warming up.",
     examples: [""],
-    timeLimit: 45,
     icon: BrainIcon,
     color: "bg-green-100 dark:bg-green-900/20",
     borderColor: "border-green-200 dark:border-green-800",
@@ -25,6 +27,7 @@ export const difficultyLevels: difficultyLevelType[] = [
         percent: [0, 20],
         value: [0, 100],
       },
+      timeLimit: 45,
     },
   },
   {
@@ -33,7 +36,6 @@ export const difficultyLevels: difficultyLevelType[] = [
     description:
       "More complex calculations with larger numbers. Good for regular practice.",
     examples: [""],
-    timeLimit: 60,
     icon: ClockIcon,
     color: "bg-amber-100 dark:bg-amber-900/20",
     borderColor: "border-amber-200 dark:border-amber-800",
@@ -50,6 +52,7 @@ export const difficultyLevels: difficultyLevelType[] = [
         percent: [0, 100],
         value: [0, 1000],
       },
+      timeLimit: 60,
     },
   },
   {
@@ -58,7 +61,6 @@ export const difficultyLevels: difficultyLevelType[] = [
     description:
       "Advanced calculations requiring multiple steps. For those seeking a challenge.",
     examples: [""],
-    timeLimit: 90,
     icon: TrophyIcon,
     color: "bg-red-100 dark:bg-red-900/20",
     borderColor: "border-red-200 dark:border-red-800",
@@ -75,6 +77,17 @@ export const difficultyLevels: difficultyLevelType[] = [
         percent: [0, 500],
         value: [0, 1000],
       },
+      timeLimit: 90,
     },
   },
 ];
+
+export const defaultRules: ruleDefinitionsType = {
+  addSubRange: { range: [0, 100], decimalPrecision: 0 },
+  multDivRange: { range: [0, 100], decimalPrecision: 0 },
+  percentRange: {
+    percent: [0, 100],
+    value: [0, 100],
+  },
+  timeLimit: 60,
+};

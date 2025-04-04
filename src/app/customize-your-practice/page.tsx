@@ -30,7 +30,7 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Link from "next/link";
 import RangeSlider from "@/components/rangeSlider";
-import { difficultyLevels } from "@/lib/constants";
+import { defaultRules, difficultyLevels } from "@/lib/constants";
 import {
   difficultyLevelType,
   ruleDefinitionsType,
@@ -61,14 +61,6 @@ export default function CustomPractice() {
       const difficultyProperties = difficultyLevels.find(
         (diff) => diff.id === difficulty
       );
-      const defaultRules: ruleDefinitionsType = {
-        addSubRange: { range: [0, 100], decimalPrecision: 0 },
-        multDivRange: { range: [0, 100], decimalPrecision: 0 },
-        percentRange: {
-          percent: [0, 100],
-          value: [0, 100],
-        },
-      };
       const rules = difficultyProperties?.ruleDefinitions ?? defaultRules;
       setAddSubRange(rules.addSubRange.range);
       setAddSubDecimalPrecision(rules.addSubRange.decimalPrecision);
@@ -99,7 +91,7 @@ export default function CustomPractice() {
         percentRange[1] === level.ruleDefinitions.percentRange.percent[1] &&
         percentValueRange[0] === level.ruleDefinitions.percentRange.value[0] &&
         percentValueRange[1] === level.ruleDefinitions.percentRange.value[1] &&
-        timeLimit === level.timeLimit
+        timeLimit === level.ruleDefinitions.timeLimit
       );
     };
 
@@ -134,7 +126,8 @@ export default function CustomPractice() {
       },
       percentRange: { percent: percentRange, value: percentValueRange },
     };
-    console.log(ruleDefinitions);
+    timeLimit;
+    // send ruleDefinitions to the backend
   };
 
   const calcTimeStampPos = (value: number) => {
@@ -198,12 +191,14 @@ export default function CustomPractice() {
                   }`}
                   onClick={() => {
                     setDifficulty(level.id);
-                    setTimeLimit(level.timeLimit);
+                    setTimeLimit(level.ruleDefinitions.timeLimit);
                   }}
                 >
-                  <CardHeader className={`${level.color} rounded-t-lg p-4`}>
+                  <CardHeader
+                    className={`${level.color} rounded-t-lg pl-6 pr-4 pt-4 pb-2`}
+                  >
                     <div className="flex justify-between items-center">
-                      <CardTitle className={level.textColor}>
+                      <CardTitle className={`${level.textColor} text-xl`}>
                         {level.title}
                       </CardTitle>
                       {<level.icon className={`${level.textColor} h-8 w-8`} />}

@@ -28,9 +28,11 @@ export default function PracticePage() {
   const [hardExamples, setHardExamples] = useState<string[]>([]);
 
   useEffect(() => {
-    setEasyExamples(Array.from({ length: 3 }, generateEasy));
-    setMediumExamples(Array.from({ length: 3 }, generateMedium));
-    setHardExamples(Array.from({ length: 3 }, generateHard));
+    setEasyExamples(Array.from({ length: 3 }, () => generateEasy().problem));
+    setMediumExamples(
+      Array.from({ length: 3 }, () => generateMedium().problem)
+    );
+    setHardExamples(Array.from({ length: 3 }, () => generateHard().problem));
   }, []);
 
   const tips = [
@@ -152,7 +154,7 @@ export default function PracticePage() {
                     <div>
                       <h3 className="font-medium mb-1">Time Limit:</h3>
                       <p className="text-muted-foreground">
-                        {level.timeLimit.toString()} seconds
+                        {level.ruleDefinitions.timeLimit.toString()} seconds
                       </p>
                     </div>
                   </div>

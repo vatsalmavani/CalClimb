@@ -60,7 +60,7 @@ export default function Home() {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => router.push("/custom-practice")}
+              onClick={() => router.push("/customize-your-practice")}
             >
               Custom Session
             </Button>

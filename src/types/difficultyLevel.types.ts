@@ -8,6 +8,7 @@ export type ruleDefinitionsType = {
     percent: [number, number];
     value: [number, number];
   };
+  timeLimit: number;
 };
 
 export type difficultyLevelType = {
@@ -15,7 +16,6 @@ export type difficultyLevelType = {
   title: string;
   description: string;
   examples: string[];
-  timeLimit: number;
   icon: ForwardRefExoticComponent<
     Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
   >;
