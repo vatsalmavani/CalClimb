@@ -16,10 +16,15 @@ export default function Header({ children }: { children?: React.ReactNode }) {
           <div>profile</div>
         ) : (
           <div className="flex items-center gap-4">
-            <Link href="#" className="text-sm font-medium hover:text-primary">
+            <Link
+              href="/login"
+              className="text-sm font-medium hover:text-primary"
+            >
               Log in
             </Link>
-            <Button>Get Started</Button>
+            <Link href="/signup">
+              <Button>Get Started</Button>
+            </Link>
           </div>
         )}
       </div>
